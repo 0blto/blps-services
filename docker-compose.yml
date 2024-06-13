@@ -1,37 +1,31 @@
 version: "3.8"
 
 services:
-
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    networks:
-      - drain-network
+    image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
-    restart: always
-
-  kafka:
-    image: confluentinc/cp-kafka:latest
     networks:
       - drain-network
+
+  kafka:
+    image: wurstmeister/kafka
     ports:
       - "9092:9092"
+    depends_on:
+      - zookeeper
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENERS: PLAINTEXT://:9092
-    restart: always
+      KAFKA_CREATE_TOPICS: "mailer:5:1"
+    networks:
+      - drain-network
 
   blps-fundament:
     build:
       context: ./blps
     depends_on:
-      - postgres-auth
-      - postgres-shopping
-      - zookeeper
-      - kafka
+      - blps-mail
     container_name: blps-fundament
     expose:
       - "5100"
@@ -47,7 +41,6 @@ services:
     depends_on:
       - postgres-auth
       - postgres-shopping
-      - zookeeper
       - kafka
     container_name: blps-mail
     expose:
@@ -89,7 +82,7 @@ services:
       - "-c"
       - "max_prepared_transactions=100"
     environment:
-      POSTGRES_DB: postgres2
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
     expose:
