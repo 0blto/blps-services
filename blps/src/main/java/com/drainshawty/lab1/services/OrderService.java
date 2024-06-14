@@ -12,8 +12,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.aspectj.weaver.ast.Or;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -163,7 +162,8 @@ public class OrderService {
     }
 
     @Transactional
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "*/10 * * * * *")
+    @SchedulerLock(name = "OrderService_checkGuaranteeExpiration", lockAtLeastFor = "PT5S", lockAtMostFor = "PT9S")
     public void checkGuaranteeExpiration() {
         orderRepo.getAllByStatus(Order.Status.RECEIVED)
                 .forEach(o -> {

@@ -35,6 +35,20 @@ services:
       - drain-network
     restart: always
 
+  blps-fundament-replica:
+    build:
+      context: ./blps
+    depends_on:
+      - blps-mail
+    container_name: blps-fundament-replica
+    expose:
+      - "5100"
+    ports:
+      - "5115:5100/tcp"
+    networks:
+      - drain-network
+    restart: always
+
   blps-mail:
     build:
       context: ./mail-service
@@ -46,7 +60,7 @@ services:
     expose:
       - "5200"
     ports:
-      - "5200:5200/tcp"
+      - "5201:5200/tcp"
     networks:
       - drain-network
     restart: always
@@ -89,6 +103,29 @@ services:
       - "5432"
     ports:
       - "5556:5432/tcp"
+    networks:
+      - drain-network
+    restart: always
+
+  postgres-shed:
+    container_name: postgres-container-blps-shed
+    image: postgres:latest
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=1000"
+      - "-c"
+      - "max_prepared_transactions=100"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    expose:
+      - "5432"
+    ports:
+      - "5558:5432/tcp"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - drain-network
     restart: always

@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 
 @Component
-@EnableScheduling
 public class ApplicationBeansProvider {
     @Bean
     public BCryptPasswordEncoder newPasswordEncoder() { return new BCryptPasswordEncoder(); }
