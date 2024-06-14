@@ -1,7 +1,0 @@
-com\drainshawty\mailservice\kafka\CustomJsonDeserializer.class
-com\drainshawty\mailservice\MailServiceApplication.class
-com\drainshawty\mailservice\service\EmailService.class
-com\drainshawty\mailservice\kafka\KafkaConfig.class
-com\drainshawty\mailservice\service\KafkaConsumer.class
-com\drainshawty\mailservice\data\EmailData.class
-com\drainshawty\mailservice\data\EmailData$EmailDataBuilder.class
